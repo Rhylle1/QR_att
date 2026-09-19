@@ -64,7 +64,9 @@ export default function LoginScreen() {
             </View>
 
             <Text style={styles.title}>Welcome Back</Text>
-            <Text style={styles.subtitle}>Sign in to record your attendance</Text>
+            <Text style={styles.subtitle}>
+              Sign in to record your attendance
+            </Text>
 
             <View style={styles.form}>
               <Text style={styles.label}>Email</Text>
@@ -93,7 +95,11 @@ export default function LoginScreen() {
               {error && <Text style={styles.error}>{error}</Text>}
 
               {loading ? (
-                <ActivityIndicator size="large" color={COLORS.primary} style={styles.loader} />
+                <ActivityIndicator
+                  size="large"
+                  color={COLORS.primary}
+                  style={styles.loader}
+                />
               ) : (
                 <AppButton
                   theme="primary"
@@ -133,16 +139,15 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: '700',
     color: COLORS.textPrimary,
-    textAlign: 'center',
     marginBottom: 4,
   },
   subtitle: {
-    fontSize: 14,
+    fontSize: 15,
     color: COLORS.textSecondary,
-    textAlign: 'center',
+    lineHeight: 21,
     marginBottom: 32,
   },
   form: {
@@ -157,18 +162,18 @@ const styles = StyleSheet.create({
   },
   input: {
     backgroundColor: COLORS.card,
-    borderRadius: 14,
+    borderRadius: 10,
     borderWidth: 1,
     borderColor: COLORS.border,
     paddingHorizontal: 14,
     paddingVertical: 12,
-    fontSize: 15,
+    fontSize: 16,
     color: COLORS.textPrimary,
   },
   error: {
     fontSize: 14,
-    color: '#C62828',
-    textAlign: 'center',
+    color: COLORS.danger,
+    textAlign: 'left',
     marginTop: 12,
     marginBottom: 4,
   },

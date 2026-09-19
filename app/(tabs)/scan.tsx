@@ -6,7 +6,7 @@ import AppButton from '@/components/AppButton';
 import { COLORS } from '@/constants/colors';
 //import { STUDENT_ID } from '@/constants/student';
 import { useAuth } from '@/lib/auth';
-import { registerAttendance } from '@/lib/database';
+import { registerAttendance } from '@/lib/attendance';
 
 export default function ScanScreen() {
   const { user } = useAuth();
@@ -153,5 +153,3 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
 });
-
-

@@ -16,7 +16,11 @@ export default function AppButton({ title, icon, theme, onPress }: Props) {
       <View
         style={[
           styles.buttonOuter,
-          { borderWidth: 3, borderColor: COLORS.primary, borderRadius: 18 },
+          {
+            borderWidth: 1,
+            borderColor: COLORS.primary,
+            borderRadius: 10,
+          },
         ]}
       >
         <Pressable
@@ -58,19 +62,22 @@ const styles = StyleSheet.create({
     marginBottom: 14,
   },
   buttonInner: {
-    borderRadius: 14,
+    borderRadius: 10,
     paddingVertical: 16,
     paddingHorizontal: 20,
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
     backgroundColor: COLORS.card,
-    shadowColor: COLORS.shadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    borderWidth: 1,
+    borderColor: COLORS.border,
   },
-  icon: { paddingRight: 10 },
-  label: { fontSize: 17, fontWeight: '600', color: COLORS.textPrimary },
+  icon: {
+    paddingRight: 10,
+  },
+  label: {
+    fontSize: 17,
+    fontWeight: '600',
+    color: COLORS.textPrimary,
+  },
 });

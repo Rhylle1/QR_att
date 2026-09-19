@@ -2,7 +2,8 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import DateTimePicker, {
   type DateTimePickerEvent,
 } from '@react-native-community/datetimepicker';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
+import { useFocusEffect } from 'expo-router';
 import {
   Platform,
   Pressable,
@@ -16,13 +17,17 @@ import QRCode from 'react-native-qrcode-svg';
 
 import AppButton from '@/components/AppButton';
 import { COLORS } from '@/constants/colors';
-import { createEvent } from '@/lib/database';
+import { useAuth } from '@/lib/auth';
+import { createEvent } from '@/lib/events';
+import { getProfile } from '@/lib/profile';
+import type { Role } from '@/lib/profile';
 
 function toLocalISO(date: Date) {
   const pad = (n: number) => String(n).padStart(2, '0');
   return (
-    `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}` +
-    `T${pad(date.getHours())}:${pad(date.getMinutes())}:00`
+    `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
+      date.getDate()
+    )}T${pad(date.getHours())}:${pad(date.getMinutes())}:00`
   );
 }
 
@@ -43,6 +48,33 @@ const QUICK_END_OPTIONS = [
 type EditTarget = 'start' | 'end';
 
 export default function TeacherScreen() {
+  const { user } = useAuth();
+  const [role, setRole] = useState<Role | null>(null);
+  const [roleLoading, setRoleLoading] = useState(true);
+
+  useFocusEffect(
+    useCallback(() => {
+      let active = true;
+
+      if (!user) {
+        setRoleLoading(false);
+        return () => {
+          active = false;
+        };
+      }
+
+      getProfile(user.id).then((profile) => {
+        if (!active) return;
+        setRole(profile?.role ?? 'student');
+        setRoleLoading(false);
+      });
+
+      return () => {
+        active = false;
+      };
+    }, [user])
+  );
+
   const [title, setTitle] = useState('');
   const [eventId, setEventId] = useState('');
   const [startDate, setStartDate] = useState(() => new Date());
@@ -75,7 +107,11 @@ export default function TeacherScreen() {
 
     const current = editTarget === 'start' ? startDate : endDate;
     const next = new Date(current);
-    next.setFullYear(selected.getFullYear(), selected.getMonth(), selected.getDate());
+    next.setFullYear(
+      selected.getFullYear(),
+      selected.getMonth(),
+      selected.getDate()
+    );
     next.setHours(selected.getHours(), selected.getMinutes(), 0, 0);
 
     if (editTarget === 'start') setStartDate(next);
@@ -126,6 +162,34 @@ export default function TeacherScreen() {
     });
   };
 
+  if (roleLoading) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.content}>
+          <Text style={styles.title}>Checking your account...</Text>
+        </View>
+      </View>
+    );
+  }
+
+  if (role !== 'teacher') {
+    return (
+      <View style={styles.container}>
+        <View style={styles.content}>
+          <Ionicons
+            name="lock-closed-outline"
+            size={48}
+            color={COLORS.primary}
+          />
+          <Text style={styles.title}>Teachers Only</Text>
+          <Text style={styles.subtitle}>
+            Only teacher accounts can create events.
+          </Text>
+        </View>
+      </View>
+    );
+  }
+
   return (
     <ScrollView
       style={styles.container}
@@ -169,6 +233,7 @@ export default function TeacherScreen() {
         icon="moon-outline"
         onPress={() => openPicker('end')}
       />
+
       <View style={styles.chipRow}>
         {QUICK_END_OPTIONS.map((option) => (
           <Pressable
@@ -180,6 +245,7 @@ export default function TeacherScreen() {
           </Pressable>
         ))}
       </View>
+
       <Text style={styles.hint}>Tap a chip to set the end time from start.</Text>
 
       {message && <Text style={styles.message}>{message}</Text>}
@@ -207,9 +273,11 @@ export default function TeacherScreen() {
           <Text style={styles.resultTitle}>
             Scan this QR code with the Scan tab:
           </Text>
+
           <View style={styles.qrBox}>
             <QRCode value={payload} size={200} />
           </View>
+
           <Text style={styles.payloadText}>{payload}</Text>
         </View>
       )}
@@ -226,12 +294,19 @@ type PickerFieldProps = {
 function PickerField({ value, icon, onPress }: PickerFieldProps) {
   return (
     <Pressable
-      style={({ pressed }) => [styles.pickerField, pressed && styles.pickerFieldPressed]}
+      style={({ pressed }) => [
+        styles.pickerField,
+        pressed && styles.pickerFieldPressed,
+      ]}
       onPress={onPress}
     >
       <Ionicons name={icon} size={20} color={COLORS.primary} />
       <Text style={styles.pickerValue}>{value}</Text>
-      <Ionicons name="calendar-outline" size={18} color={COLORS.textSecondary} />
+      <Ionicons
+        name="calendar-outline"
+        size={18}
+        color={COLORS.textSecondary}
+      />
     </Pressable>
   );
 }
@@ -358,4 +433,3 @@ const styles = StyleSheet.create({
     lineHeight: 16,
   },
 });
-
