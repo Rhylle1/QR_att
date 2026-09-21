@@ -1,5 +1,5 @@
 export const COLORS = {
-  primary: '#2E7D5B',
+  primary: '#899be7',
   background: '#F7F6F2',
   card: '#FFFFFF',
   textPrimary: '#14181F',
@@ -9,6 +9,6 @@ export const COLORS = {
   border: '#DADFE3',
   shadow: '#14181F',
   warning: '#C97A2B',
-  success: '#2E7D5B',
+  success: '#82b4c0',
   danger: '#B3261E',
 } as const;
